@@ -74,16 +74,17 @@ elif select_d=='Disabling events':
                         color_continuous_scale=px.colors.sequential.Plasma)
 st.plotly_chart(fig)
 
-sl=st.slider('Year',2004,2014)
-#deaths=death_geo.groupby(['year'])['death'].sum()
-#disabl=death_geo.groupby(['year'])['disabling'].sum()
-meds_per_year=dat_flat.loc[dat_flat['year']==sl].groupby(['flat_meds'])['medications'].size().sort_values(ascending=False).head(10).to_frame()
-print('IMPORTANT!')
-print(meds_per_year)
-#print(pd.DataFrame(meds_per_year).columns)
+@st.cache()
+def plot_yearly_meds_indiv():
+    meds_per_year=dat_flat.loc[dat_flat['year']==sl].groupby(['flat_meds'])['medications'].size().sort_values(ascending=False).head(10).to_frame()
+    return meds_per_year
 
+st.header('Top 10 sorted occurrence of individual medications yearly')
+st.markdown('#### Here we plot the sorted occurence of individual medications as a histogram for every year in the dataset.')
+sl=st.slider('Year',2004,2014)
+meds_per_year=plot_yearly_meds_indiv()
 st.write(meds_per_year)
-#fig2 = px.histogram(meds_per_year[['medications']], x=meds_per_year.index)
 st.bar_chart(meds_per_year)
+plot_yearly_meds_indiv()
 
 #px.histogram('Death and disability histogram')
