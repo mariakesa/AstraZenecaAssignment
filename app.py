@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import pydeck as pdk
+import plotly.express as px
 
 '''
 Do 'pip install streamlit'
@@ -11,7 +11,7 @@ from streamlit import caching
 
 caching.clear_cache()
 
-def prepare_death_geo(df):
+def prepare_death_disabling_geo(df):
     death_df=df.copy()
     alpha=pd.read_csv(alpha_path,header=0)
     #alpha.rename(columns={'Alpha-2 code':'country_code'},inplace=True)
@@ -27,7 +27,6 @@ def prepare_death_geo(df):
     death_geo['country_code']=death_geo.index
     return death_geo
 
-
 @st.cache(persist=True)
 def load_data(path,countries_path,alpha_path):
   dat=pd.read_csv(path)
@@ -37,7 +36,7 @@ def load_data(path,countries_path,alpha_path):
   countries.rename(columns={'country':'country_code'},inplace=True)
   countries_geo=pd.merge(dat_cntr,countries,on='country_code')
   #Death map
-  death_geo=prepare_death_geo(dat)
+  death_geo=prepare_death_disabling_geo(dat)
   #death_geo.rename(columns={'country_code':'deaths'},inplace=True)
   return dat,countries_geo, death_geo
 
@@ -51,30 +50,20 @@ st.subheader('Raw data')
 if st.checkbox("Show Raw Data", False):
     st.write(full_data)
 
-st.map(countries_data)
 
-st.write(death_geo)
+st.header('Deaths and disabling events on a map')
+st.markdown('#### You can toggle between deaths and disabling events and hover over the map to see the number of cases per country.')
 
-import plotly.express as px
+select_d=st.selectbox('Event type',['Deaths','Disabling events'],key=1)
 
-fig = px.choropleth(death_geo, locations='country_code',
-                    color="death", # lifeExp is a column of gapminder
-                    hover_name="death", # column to add to hover information
-                    color_continuous_scale=px.colors.sequential.Plasma)
+if select_d=='Deaths':
+    fig = px.choropleth(death_geo, locations='country_code',
+                        color="death", # lifeExp is a column of gapminder
+                        hover_name="death", # column to add to hover information
+                        color_continuous_scale=px.colors.sequential.Plasma)
+elif select_d=='Disabling events':
+    fig = px.choropleth(death_geo, locations='country_code',
+                        color="disabling", # lifeExp is a column of gapminder
+                        hover_name="disabling", # column to add to hover information
+                        color_continuous_scale=px.colors.sequential.Plasma)
 st.plotly_chart(fig)
-'''
-st.write(pdk.Deck(
-    map_style="mapbox://styles/mapbox/light-v9",
-    layers=[
-    pdk.Layer(
-    "HexagonLayer",
-    data=death_geo[['death','latitude','longitude']],
-    get_position=['longitude','latitude'],
-    radius=100,
-    pickable=True,
-    elevation_scale=4,
-    elevation_range=[0,1000],
-    ),
-    ],
-))
-'''
