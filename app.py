@@ -32,6 +32,7 @@ def load_data(path,flat_path,countries_path,alpha_path):
   dat=pd.read_csv(path)
   dat['year']=dat['date'].map(lambda x: int(str(x)[:4]))
   dat_flat=pd.read_csv(flat_path)
+  dat_flat['year']=dat_flat['date'].map(lambda x: int(str(x)[:4]))
   dat.rename(columns={'country':'country_code'},inplace=True)
   dat_cntr=dat['country_code'].dropna()
   countries=pd.read_csv(countries_path)
@@ -72,3 +73,17 @@ elif select_d=='Disabling events':
                         hover_name="disabling", # column to add to hover information
                         color_continuous_scale=px.colors.sequential.Plasma)
 st.plotly_chart(fig)
+
+sl=st.slider('Year',2004,2014)
+#deaths=death_geo.groupby(['year'])['death'].sum()
+#disabl=death_geo.groupby(['year'])['disabling'].sum()
+meds_per_year=dat_flat.loc[dat_flat['year']==sl].groupby(['flat_meds'])['medications'].size().sort_values(ascending=False).head(10).to_frame()
+print('IMPORTANT!')
+print(meds_per_year)
+#print(pd.DataFrame(meds_per_year).columns)
+
+st.write(meds_per_year)
+#fig2 = px.histogram(meds_per_year[['medications']], x=meds_per_year.index)
+st.bar_chart(meds_per_year)
+
+#px.histogram('Death and disability histogram')
