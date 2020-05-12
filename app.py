@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 '''
 Do 'pip install streamlit'
@@ -85,6 +87,13 @@ sl=st.slider('Year',2004,2014)
 meds_per_year=plot_yearly_meds_indiv()
 st.write(meds_per_year)
 st.bar_chart(meds_per_year)
-plot_yearly_meds_indiv()
+
+text_all=' '.join(full_data['meds_str'])
+wordcloud=WordCloud(background_color='white',height=640,width=800).generate(text_all)
+plt.imshow(wordcloud)
+plt.xticks([])
+plt.yticks([])
+st.pyplot()
+
 
 #px.histogram('Death and disability histogram')
