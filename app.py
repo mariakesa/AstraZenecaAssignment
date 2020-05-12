@@ -88,12 +88,29 @@ meds_per_year=plot_yearly_meds_indiv()
 st.write(meds_per_year)
 st.bar_chart(meds_per_year)
 
-text_all=' '.join(full_data['meds_str'])
-wordcloud=WordCloud(background_color='white',height=640,width=800).generate(text_all)
-plt.imshow(wordcloud)
-plt.xticks([])
-plt.yticks([])
-st.pyplot()
+select_d2=st.selectbox('Event type',['All data wordcloud','Deaths wordcloud','Disabling events wordcloud'],key=2)
+
+if select_d2=='All data wordcloud':
+    text_all=' '.join(full_data['meds_str'])
+    wordcloud=WordCloud(background_color='white',height=640,width=800).generate(text_all)
+    plt.imshow(wordcloud)
+    plt.xticks([])
+    plt.yticks([])
+    st.pyplot()
+elif select_d2=='Deaths wordcloud':
+    text_all=' '.join(full_data[full_data['death']==1]['meds_str'])
+    wordcloud=WordCloud(background_color='white',height=640,width=800).generate(text_all)
+    plt.imshow(wordcloud)
+    plt.xticks([])
+    plt.yticks([])
+    st.pyplot()
+elif select_d2=='Disabling events wordcloud':
+    text_all=' '.join(full_data[full_data['disabling']==1]['meds_str'])
+    wordcloud=WordCloud(background_color='white',height=640,width=800).generate(text_all)
+    plt.imshow(wordcloud)
+    plt.xticks([])
+    plt.yticks([])
+    st.pyplot()
 
 
 #px.histogram('Death and disability histogram')
