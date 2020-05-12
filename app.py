@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import CountVectorizer
 
 '''
 Do 'pip install streamlit'
@@ -89,6 +90,8 @@ meds_per_year=plot_yearly_meds_indiv()
 st.write(meds_per_year)
 st.bar_chart(meds_per_year)
 
+
+st.header('Word clouds for all data, cases with deaths and disabiling events')
 select_d2=st.selectbox('Event type',['All data wordcloud','Deaths wordcloud','Disabling events wordcloud'],key=2)
 
 if select_d2=='All data wordcloud':
@@ -113,5 +116,46 @@ elif select_d2=='Disabling events wordcloud':
     plt.yticks([])
     st.pyplot()
 
+@st.cache(persist=True)
+def compute_trigrams(full_data,col_str):
+    meds_str=full_data[col_str]
+    print(meds_str)
+    corpus=meds_str.values[:10000]
+
+    c_vec = CountVectorizer(ngram_range=(2, 3))
+
+    # input to fit_transform() should be an iterable with strings
+    ngrams = c_vec.fit_transform(corpus)
+
+    # needs to happen after fit_transform()
+    vocab = c_vec.vocabulary_
+
+    count_values = ngrams.toarray().sum(axis=0)
+
+    count_lst=[]
+    trigram_text=[]
+    # output n-grams
+    for ng_count, ng_text in sorted([(count_values[i],k) for k,i in vocab.items()], reverse=True):
+        print(ng_count, ng_text)
+        count_lst.append(ng_count)
+        trigram_text.append(ng_text)
+
+    d={'count':count_lst, 'trigram':trigram_text}
+    trigram_df=pd.DataFrame(d).head(100)
+    return trigram_df
+
+medicine_df=compute_trigrams(full_data,'meds_str')
+
+st.header('Top 100 trigrams in medication and symptoms')
+st.markdown('#### Here we plot the top medicines that co-occur.')
+st.write(medicine_df)
+fig = px.bar(medicine_df, x='trigram', y='count',color='count')
+st.plotly_chart(fig)
+
+st.markdown('#### Here we plot the top symptoms that co-occur.')
+reactions_df=compute_trigrams(full_data,'reacts_str')
+st.write(reactions_df)
+fig = px.bar(reactions_df, x='trigram', y='count',color='count')
+st.plotly_chart(fig)
 
 #px.histogram('Death and disability histogram')
