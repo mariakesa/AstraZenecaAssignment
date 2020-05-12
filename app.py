@@ -13,6 +13,7 @@ from streamlit import caching
 
 caching.clear_cache()
 
+@st.cache(persist=True)
 def prepare_death_disabling_geo(df):
     death_df=df.copy()
     alpha=pd.read_csv(alpha_path,header=0)
