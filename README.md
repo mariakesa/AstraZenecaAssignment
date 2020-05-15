@@ -11,7 +11,7 @@ data visualizations.
 
 To further show off my skills Wrangling.ipynb contains preprocessing of the data and SparkSQLForDataAnalysis.ipynb shows some queries that I wrote.
 
-Logistic regression and NaiveBayes classifier are used to predict deaths on features made of medications and symptoms with 90% and 86% accuracy in LogisticRegressionAndNaiveBayes notebook. .
+Logistic regression and NaiveBayes classifier are used to predict deaths on features made of medications and symptoms with 82% and 82% accuracy in LogisticRegressionAndNaiveBayes notebook. .
 
 ![alt text](https://github.com/mariakesa/AstraZenecaAssignment/blob/master/figs/map.png)
 
